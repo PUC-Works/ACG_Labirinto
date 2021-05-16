@@ -40,6 +40,22 @@ class Caixa {
         return this.paredeBaixo && this.paredeBaixo.caixaBaixo && !this.paredeBaixo.caixaBaixo.visitada;
     }
 
+    conectadoCima() {
+        return this.paredeCima.demolida && this.paredeCima.caixaCima;
+    }
+
+    conectadoDireita() {
+        return this.paredeDireita.demolida && this.paredeDireita.caixaDireita;
+    }
+
+    conectadoBaixo() {
+        return this.paredeBaixo.demolida && this.paredeBaixo.caixaBaixo;
+    }
+
+    conectadoEsquerda() {
+        return this.paredeEsquerda.demolida && this.paredeEsquerda.caixaEsquerda;
+    }
+
     visitar() {
         this.visitada = true;
     }
@@ -63,6 +79,31 @@ class Caixa {
 
         return naoVisitados[Math.floor(Math.random() * naoVisitados.length)];
     }
+}
+
+class Ponto {
+    constructor() {
+        this.conexoes = [];
+        // Debug apenas
+        // this.x = null;
+        // this.y = null;
+    }
+}
+
+function inicializarPontos(dimensao) {
+    let pontos = [];
+
+    for (let y = 0; y < dimensao; y++) {
+        pontos[y] = [];
+        for (let x = 0; x < dimensao; x++) {
+            // Debug apenas
+            // ponto.x = x;
+            // ponto.y = y;
+            pontos[y][x] = new Ponto();
+        }
+    }
+
+    return pontos;
 }
 
 function inicializarMatriz(dimensao) {
@@ -128,6 +169,26 @@ function inicializarMatriz(dimensao) {
     }
 
     return matriz;
+}
+
+
+function criarMatrizAdjacenciaLabirinto(lab) {
+    let pontos = inicializarPontos(lab.length);
+
+    for (let y = 0; y < lab.length; y++) {
+        for (let x = 0; x < lab[y].length; x++) {
+            if (lab[y][x].conectadoCima())
+                pontos[y][x].conexoes.push(pontos[y - 1][x]);
+            if (lab[y][x].conectadoDireita())
+                pontos[y][x].conexoes.push(pontos[y][x + 1]);
+            if (lab[y][x].conectadoBaixo())
+                pontos[y][x].conexoes.push(pontos[y + 1][x]);
+            if (lab[y][x].conectadoEsquerda())
+                pontos[y][x].conexoes.push(pontos[y][x - 1]);
+        }
+    }
+
+    return pontos;
 }
 
 function criarLabirinto(matrizOriginal) {
