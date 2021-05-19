@@ -261,12 +261,18 @@ async function renderizarLabirinto(matriz) {
 }
 
 function labirinto() {
-    const DIMENSAO_MATRIZ = 10;
-    renderizarLabirinto(criarLabirinto(inicializarMatriz(DIMENSAO_MATRIZ)))
-        .then();
+    const DIMENSAO_MATRIZ = 15;
+    var matriz = inicializarMatriz(DIMENSAO_MATRIZ);
+    var labirinto = criarLabirinto(matriz);
+
+    renderizarLabirinto(labirinto).then();
+    MostrarCaminho(labirinto);
 }
 
-function MostrarCaminho(matriz, inicio, destino){
+function MostrarCaminho(matriz){
+    if(inicio == destino){
 
+    }
+    
 
 }
