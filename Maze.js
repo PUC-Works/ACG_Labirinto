@@ -1,0 +1,145 @@
+let colunas, linhas;
+let w = 20;
+let grid = [];
+let atual;
+let pilha = [];
+let celula_mais_distante;
+let comprimento_da_pilha = 0;
+let labirinto_terminado = false;
+let pilha_de_caminho_correto = [];
+let Comprimento_cPS = 0;
+var countDown = 3;
+let todos_nao_visitados = [];
+let celula_fantasma = { i: 0, j: 0 };
+let draw_fantasma = false;
+let usuario_Cell = [];
+let contador = 0;
+let intervalo_fantasma = 1;
+let contagem_de_framer = 0;
+let fantasma_pronto = false;
+let pilha_de_copia;
+let time = setInterval(() => {
+  if (labirinto_terminado) {
+    if (countDown > 0) {
+      countDown -= 1;
+    }
+    if (countDown === 0) {
+      if (2 === 2) {
+        comprimento_da_pilha -= 2;
+      }
+
+    }
+  }
+}, 1000);
+let fantamas_Timer = setInterval(() => {
+  if (countDown === 0) {
+    draw_fantasma = true;
+    Comprimento_cPS = pilha_de_caminho_correto.length;
+    celula_fantasma = pilha_de_caminho_correto[(pilha_de_caminho_correto.length - (floor((2 * 0.6) * intervalo_fantasma)))];
+    if (celula_fantasma) {
+      pilha_de_caminho_correto.splice((pilha_de_caminho_correto.length - (floor((2 * 0.6) * intervalo_fantasma))), pilha_de_caminho_correto.length);
+    } else {
+      ghostCell = celula_mais_distante;
+    }
+  }
+  fantasma_pronto = true;
+
+}, intervalo_fantasma * 500);
+
+function setup() {
+  createCanvas(600, 600);
+  /* centerCanvas(); */
+  colunas = floor(width / w);
+  linhas = floor(height / w);
+
+  for (let j = 0; j < linhas; j++) {
+    for (let i = 0; i < colunas; i++) {
+      var cell = new Cell(i, j);
+      grid.push(cell);
+    }
+  }
+  atual = grid[0];
+
+}
+function draw() {
+  background(51);
+  for (let i = 0; i < grid.length; i++) {
+    grid[i].show();
+  }
+
+  atual.visitado = true;
+  if (labirinto_terminado === false) {
+    atual.realcar();
+  }
+  let next = atual.verificarVizinhos();
+  if (next) {
+    next.visitado = true;
+    pilha.push(atual);
+    remover_paredes(atual, next);
+    atual = next;
+    todos_nao_visitados.push(atual);
+  } else if (pilha.length > 0) {
+    if (pilha.length > comprimento_da_pilha) {
+      pilha_de_caminho_correto = [];
+      todos_nao_visitados = [];
+      comprimento_da_pilha = pilha.length;
+      celula_mais_distante = atual;
+      pilha_de_caminho_correto.push(atual);
+    }
+    atual = pilha.pop();
+
+    if (pilha_de_caminho_correto.indexOf(atual) === -1 && todos_nao_visitados.indexOf(atual) === -1) {
+      pilha_de_caminho_correto.push(atual);
+    }
+  } else if (pilha.length === 0) {
+    if (draw_fantasma === false) {
+      draw_fantasma = true;
+    }
+
+    let fimX = (celula_mais_distante.i) * w;
+    let fimy = (celula_mais_distante.j) * w;
+    fill(0, 255, 0, 255);
+    var entrada = ellipse(0 + w / 2, 0 + w / 2, w / 1.5, w / 1.5);
+    var saida = ellipse(fimX + w / 2, fimy + w / 2, w / 1.5, w / 1.5);
+    labirinto_terminado = true;
+
+  }
+  noStroke();
+  fill(0, 255, 255, 255);
+  if (draw_fantasma) {
+    noStroke();
+    fill(255, 165, 0, 255);
+    ellipse((celula_fantasma.i * w) + w / 2, (celula_fantasma.j * w) + w / 2, w / 1.5, w / 1.5);
+
+  }
+  if (atual === celula_mais_distante || celula_fantasma === celula_mais_distante) {
+    noLoop();
+  }
+
+}
+function index(i, j) {
+  if (i < 0 || j < 0 || i > colunas - 1 || j > linhas - 1) {
+    return -1;
+  }
+  return i + j * colunas;
+}
+
+function remover_paredes(a, b) {
+  let x = a.i - b.i;
+  if (x === 1) {
+    a.paredes[3] = false;
+    b.paredes[1] = false;
+  } else if (x === -1) {
+    a.paredes[1] = false;
+    b.paredes[3] = false;
+  }
+  let y = a.j - b.j;
+  if (y === 1) {
+    a.paredes[0] = false;
+    b.paredes[2] = false;
+  } else if (y === -1) {
+    a.paredes[2] = false;
+    b.paredes[0] = false;
+  }
+}
+
