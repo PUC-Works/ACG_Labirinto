@@ -7,22 +7,22 @@ let celula_mais_distante;
 let comprimento_da_pilha = 0;
 let labirinto_terminado = false;
 let pilha_de_caminho_correto = [];
-let Comprimento_cPS = 0;
 var countDown = 3;
 let todos_nao_visitados = [];
 let celula_fantasma = { i: 0, j: 0 };
 let draw_fantasma = false;
-let usuario_Cell = [];
 let contador = 0;
 let intervalo_fantasma = 1;
 let contagem_de_framer = 0;
 let fantasma_pronto = false;
 let pilha_de_copia;
+//Intervalo  q verifica se o  labirinto  terminou  para começar uma contagem ate 3 para começar 
 let time = setInterval(() => {
   if (labirinto_terminado) {
     if (countDown > 0) {
       countDown -= 1;
     }
+    // intervalo  de vertices percorrido  sendo  de 1 ate 2 assim  evita q o ponto  pule vertices do  grafo
     if (countDown === 0) {
       if (2 === 2) {
         comprimento_da_pilha -= 2;
@@ -31,13 +31,13 @@ let time = setInterval(() => {
     }
   }
 }, 1000);
+// metodo  para fazer o  ponto  pecorrer os vertices correto  no grafo  assim chegando  no  vertice mais distante
 let fantamas_Timer = setInterval(() => {
   if (countDown === 0) {
     draw_fantasma = true;
-    Comprimento_cPS = pilha_de_caminho_correto.length;
     celula_fantasma = pilha_de_caminho_correto[(pilha_de_caminho_correto.length - (floor((2 * 0.6) * intervalo_fantasma)))];
     if (celula_fantasma) {
-      pilha_de_caminho_correto.splice((pilha_de_caminho_correto.length - (floor((2 * 0.6) * intervalo_fantasma))), pilha_de_caminho_correto.length);
+      pilha_de_caminho_correto.splice((pilha_de_caminho_correto.length - (floor((2 * 0.6) * intervalo_fantasma))), pilha_de_caminho_correto.length); //  altera o conteúdo de uma lista, adicionando novos elementos enquanto remove elementos antigos.
     } else {
       ghostCell = celula_mais_distante;
     }
@@ -45,7 +45,7 @@ let fantamas_Timer = setInterval(() => {
   fantasma_pronto = true;
 
 }, intervalo_fantasma * 500);
-
+// metodo  responsavel  para criar o canvas 
 function setup() {
   createCanvas(600, 600);
   /* centerCanvas(); */
@@ -55,12 +55,13 @@ function setup() {
   for (let j = 0; j < linhas; j++) {
     for (let i = 0; i < colunas; i++) {
       var cell = new Cell(i, j);
-      grid.push(cell);
+      grid.push(cell); //  adiciona um ou mais elementos ao final de um array e retorna o novo comprimento desse array.
     }
   }
   atual = grid[0];
 
 }
+//metodo  responsavel  em  contruir o  labirinto  e definir o  caminho  correto  com uma adaptação  de bfs
 function draw() {
   background(51);
   for (let i = 0; i < grid.length; i++) {
@@ -74,22 +75,22 @@ function draw() {
   let next = atual.verificarVizinhos();
   if (next) {
     next.visitado = true;
-    pilha.push(atual);
+    pilha.push(atual); // adiciona um ou mais elementos ao final de um array e retorna o novo comprimento desse array.
     remover_paredes(atual, next);
     atual = next;
-    todos_nao_visitados.push(atual);
+    todos_nao_visitados.push(atual);  //adiciona um ou mais elementos ao final de um array e retorna o novo comprimento desse array.
   } else if (pilha.length > 0) {
     if (pilha.length > comprimento_da_pilha) {
       pilha_de_caminho_correto = [];
       todos_nao_visitados = [];
       comprimento_da_pilha = pilha.length;
       celula_mais_distante = atual;
-      pilha_de_caminho_correto.push(atual);
+      pilha_de_caminho_correto.push(atual); // adiciona um ou mais elementos ao final de um array e retorna o novo comprimento desse array.
     }
-    atual = pilha.pop();
+    atual = pilha.pop(); // remove o  ultimo  elemento  do  array
 
     if (pilha_de_caminho_correto.indexOf(atual) === -1 && todos_nao_visitados.indexOf(atual) === -1) {
-      pilha_de_caminho_correto.push(atual);
+      pilha_de_caminho_correto.push(atual); //  adiciona um ou mais elementos ao final de um array e retorna o novo comprimento desse array.
     }
   } else if (pilha.length === 0) {
     if (draw_fantasma === false) {
@@ -104,26 +105,27 @@ function draw() {
     labirinto_terminado = true;
 
   }
-  noStroke();
+  noStroke(); // Desativa o desenho do traço (contorno). Se noStroke () e noFill () forem chamados, nada será desenhado na tela.
   fill(0, 255, 255, 255);
   if (draw_fantasma) {
-    noStroke();
+    noStroke(); //Desativa o desenho do traço (contorno). Se noStroke () e noFill () forem chamados, nada será desenhado na tela.
     fill(255, 165, 0, 255);
     ellipse((celula_fantasma.i * w) + w / 2, (celula_fantasma.j * w) + w / 2, w / 1.5, w / 1.5);
 
   }
   if (atual === celula_mais_distante || celula_fantasma === celula_mais_distante) {
-    noLoop();
+    noLoop(); // Impede que o p5.js execute continuamente o código em draw () . Se loop () for chamado, o código em draw () começará a ser executado continuamente novamente. Se estiver usando noLoop () em setup () , deve ser a última linha dentro do bloco.
   }
 
 }
+
 function index(i, j) {
   if (i < 0 || j < 0 || i > colunas - 1 || j > linhas - 1) {
     return -1;
   }
   return i + j * colunas;
 }
-
+// Metodo  q remove as paredes da celular 
 function remover_paredes(a, b) {
   let x = a.i - b.i;
   if (x === 1) {
