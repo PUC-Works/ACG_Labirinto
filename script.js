@@ -84,9 +84,8 @@ class Caixa {
 class Ponto {
     constructor() {
         this.conexoes = [];
-        // Debug apenas
-        // this.x = null;
-        // this.y = null;
+        this.x = null;
+        this.y = null;
     }
 }
 
@@ -96,10 +95,10 @@ function inicializarPontos(dimensao) {
     for (let y = 0; y < dimensao; y++) {
         pontos[y] = [];
         for (let x = 0; x < dimensao; x++) {
-            // Debug apenas
-            // ponto.x = x;
-            // ponto.y = y;
-            pontos[y][x] = new Ponto();
+            let ponto = new Ponto();
+            ponto.x = x;
+            ponto.y = y;
+            pontos[y][x] = ponto;
         }
     }
 
@@ -171,7 +170,6 @@ function inicializarMatriz(dimensao) {
     return matriz;
 }
 
-
 function criarMatrizAdjacenciaLabirinto(lab) {
     let pontos = inicializarPontos(lab.length);
 
@@ -189,6 +187,40 @@ function criarMatrizAdjacenciaLabirinto(lab) {
     }
 
     return pontos;
+}
+
+function dfs(matrizAdj) {
+    let caminho = [];
+    let saida = matrizAdj[(matrizAdj.length - 1)][matrizAdj[0].length - 1];
+    let entrada = matrizAdj[0][0];
+
+    if (!dfsR(entrada, caminho, saida)) {
+        alert("Saída não encontrada");
+        return null;
+    }
+
+    return caminho;
+}
+
+function dfsR(ponto, caminho, saida) {
+    caminho.push(ponto);
+
+    if (ponto === saida)
+        return true;
+
+    for (let p of ponto.conexoes) {
+
+        if (caminho.includes(p))
+            continue;
+
+        if (dfsR(p, caminho, saida)) {
+            return true;
+        } else {
+            caminho.pop();
+        }
+    }
+
+    return false;
 }
 
 function criarLabirinto(matrizOriginal) {
@@ -254,7 +286,7 @@ async function renderizarLabirinto(matriz) {
             caixa.style.borderTop = matriz[y][x].paredeCima.demolida ? PAREDE_DEMOLIDA : PAREDE_EXISTENTE;
             caixa.style.borderBottom = matriz[y][x].paredeBaixo.demolida ? PAREDE_DEMOLIDA : PAREDE_EXISTENTE;
 
-            await esperar(1);
+            // await esperar(1);
             tela.appendChild(caixa);
         }
     }
