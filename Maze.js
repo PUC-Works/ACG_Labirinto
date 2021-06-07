@@ -14,7 +14,6 @@ let draw_fantasma = false;
 let contador = 0;
 let intervalo_fantasma = 1;
 let contagem_de_framer = 0;
-let fantasma_pronto = false;
 let pilha_de_copia;
 //Intervalo  q verifica se o  labirinto  terminou  para começar uma contagem ate 3 para começar 
 let time = setInterval(() => {
@@ -35,19 +34,17 @@ let time = setInterval(() => {
 let fantamas_Timer = setInterval(() => {
   if (countDown === 0) {
     draw_fantasma = true;
-    celula_fantasma = pilha_de_caminho_correto[(pilha_de_caminho_correto.length - (floor((2 * 0.6) * intervalo_fantasma)))];
+    celula_fantasma = pilha_de_caminho_correto[(pilha_de_caminho_correto.length - (floor((2 * 0.6) * intervalo_fantasma)))]; // (floor) => retorna o menor número inteiro dentre o número "x". dentro  do  arrey
     if (celula_fantasma) {
       pilha_de_caminho_correto.splice((pilha_de_caminho_correto.length - (floor((2 * 0.6) * intervalo_fantasma))), pilha_de_caminho_correto.length); //  altera o conteúdo de uma lista, adicionando novos elementos enquanto remove elementos antigos.
     } else {
       ghostCell = celula_mais_distante;
     }
   }
-  fantasma_pronto = true;
-
 }, intervalo_fantasma * 500);
 // metodo  responsavel  para criar o canvas 
 function setup() {
-  createCanvas(600, 600);
+  createCanvas(400, 400);
   /* centerCanvas(); */
   colunas = floor(width / w);
   linhas = floor(height / w);
@@ -73,13 +70,13 @@ function draw() {
     atual.realcar();
   }
   let next = atual.verificarVizinhos();
-  if (next) {
+  if (next) { // parte para criação  do  labirinto
     next.visitado = true;
     pilha.push(atual); // adiciona um ou mais elementos ao final de um array e retorna o novo comprimento desse array.
     remover_paredes(atual, next);
     atual = next;
     todos_nao_visitados.push(atual);  //adiciona um ou mais elementos ao final de um array e retorna o novo comprimento desse array.
-  } else if (pilha.length > 0) {
+  } else if (pilha.length > 0) { // parte para definir a rotas 
     if (pilha.length > comprimento_da_pilha) {
       pilha_de_caminho_correto = [];
       todos_nao_visitados = [];
@@ -92,17 +89,17 @@ function draw() {
     if (pilha_de_caminho_correto.indexOf(atual) === -1 && todos_nao_visitados.indexOf(atual) === -1) {
       pilha_de_caminho_correto.push(atual); //  adiciona um ou mais elementos ao final de um array e retorna o novo comprimento desse array.
     }
-  } else if (pilha.length === 0) {
+  } else if (pilha.length === 0) { // quando  a pilha for de tamanho  0 liberar a celula fantasma 
     if (draw_fantasma === false) {
       draw_fantasma = true;
     }
 
-    let fimX = (celula_mais_distante.i) * w;
-    let fimy = (celula_mais_distante.j) * w;
+    let fimX = (celula_mais_distante.i) * w; // define o  a cordenada x do  vertice mais distante 
+    let fimy = (celula_mais_distante.j) * w; // define a cordenada  y  do  vertice mais distante 
     fill(0, 255, 0, 255);
-    var entrada = ellipse(0 + w / 2, 0 + w / 2, w / 1.5, w / 1.5);
-    var saida = ellipse(fimX + w / 2, fimy + w / 2, w / 1.5, w / 1.5);
-    labirinto_terminado = true;
+    var entrada = ellipse(0 + w / 2, 0 + w / 2, w / 1.5, w / 1.5);// cria a entrada 
+    var saida = ellipse(fimX + w / 2, fimy + w / 2, w / 1.5, w / 1.5); // cria a saida 
+    labirinto_terminado = true; // Fleg para dizer se o  labirinto  já foi  todo  desenhado  e setados as variaveis de caminho.
 
   }
   noStroke(); // Desativa o desenho do traço (contorno). Se noStroke () e noFill () forem chamados, nada será desenhado na tela.
